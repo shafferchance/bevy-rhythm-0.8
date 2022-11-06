@@ -1,5 +1,6 @@
 mod background;
 mod material;
+mod target_arrow;
 
 use bevy::{prelude::{App, Plugin}};
 

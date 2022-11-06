@@ -2,7 +2,6 @@ use bevy::{
     prelude::*,
     reflect::TypeUuid,
     render::{
-        camera::ScalingMode,
         render_resource::{AsBindGroup, ShaderRef},
         renderer::RenderQueue,
     },
@@ -12,7 +11,6 @@ use bevy::{
         Extract, RenderApp, RenderStage,
     },
     sprite::{Material2d, Material2dPlugin, MaterialMesh2dBundle, RenderMaterials2d, SpriteBundle },
-    window::PresentMode,
 };
 
 pub const CLEAR: Color = Color::rgb(0.3, 0.3, 0.3);
