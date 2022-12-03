@@ -5,7 +5,9 @@ use bevy::{
         Query,
         Entity,
         Handle,
-        Res, ResMut, Assets, AssetServer
+        Res, ResMut, Assets, AssetServer,
+        Transform,
+        Vec3, Quat
     },
     render::{
         render_resource::{
@@ -18,11 +20,11 @@ use bevy::{
         renderer::RenderQueue
     },
     reflect::TypeUuid,
-    sprite::{Material2d, RenderMaterials2d, MaterialMesh2dBundle},
+    sprite::{Material2d, RenderMaterials2d, MaterialMesh2dBundle, SpriteBundle},
     time::Time, window::WindowDescriptor
 };
 
-use crate::types::Directions;
+use crate::{types::Directions, consts::TARGET_POSITION};
 
 // Resources to Extract for use in shader
 pub struct ExtractedTime {
@@ -43,9 +45,9 @@ pub struct TargetArrowSparkle {
 }
 
 #[derive(Component, Clone, Copy)]
-struct TimeSinceCorrect {
-    last_time: f32,
-    points: f32
+pub struct TimeSinceCorrect {
+    pub last_time: f32,
+    pub points: f32
 }
 
 #[derive(Clone, ShaderType)]
@@ -86,11 +88,12 @@ impl Material2d for ArrowSparkMaterial {
     }
 }
 
-fn extract_time_since_correct(
+pub fn extract_time_since_correct(
     mut commands: Commands,
     time_since_correct_query: Extract<Query<(Entity, &TimeSinceCorrect, &Handle<ArrowSparkMaterial>)>>
 ) {
     for (entity, time_since_correct, handle) in time_since_correct_query.iter() {
+        print!("Extracted: {:?}", time_since_correct.last_time);
         commands
             .get_or_spawn(entity)
             .insert(*time_since_correct)
@@ -98,7 +101,7 @@ fn extract_time_since_correct(
     }
 }
 
-fn prepare_arrow_sparkle_material(
+pub fn prepare_arrow_sparkle_material(
     materials: Res<RenderMaterials2d<ArrowSparkMaterial>>,
     arrow_sparkle_query: Query<(&TimeSinceCorrect, &Handle<ArrowSparkMaterial>)>,
     time: Res<ExtractedTime>,
@@ -107,6 +110,7 @@ fn prepare_arrow_sparkle_material(
     for (time_since_correct, handle) in arrow_sparkle_query.iter() {
         if let Some(material) = materials.get(handle) {
             let binding = &material.bindings[0];
+            println!("{:?}", &material.bindings[1].get_binding());
             if let OwnedBindingResource::Buffer(cur_buffer) = binding {
                 let mut buffer = encase::UniformBuffer::new(Vec::new());
                 buffer
@@ -122,11 +126,20 @@ fn prepare_arrow_sparkle_material(
     }
 }
 
-fn setup_arrow_sparkle(
-    mut commands: Commands,
-    mut mesh_assets: ResMut<Assets<Mesh>>,
-    mut my_material_assets: ResMut<Assets<ArrowSparkMaterial>>,
-    assets: Res<AssetServer>,
-) {
-    
-}
+// fn setup_arrow_sparkle(
+//     mut commands: Commands,
+//     mut mesh_assets: ResMut<Assets<Mesh>>,
+//     mut my_material_assets: ResMut<Assets<ArrowSparkMaterial>>,
+//     assets: Res<AssetServer>,
+// ) {
+//     use Directions::*;
+//     let directions = [Up, Down, Left, Right];
+
+//     for direction in directions.iter() {
+//         let mut transform = Transform::from_translation(Vec3::new(TARGET_POSITION, direction.y(), 1.));
+//         transform.rotate(Quat::from_rotation_z(direction.rotation()));
+//         commands.spawn_bundle(SpriteBundle {
+//             texture: materials
+//         })
+//     }
+// }

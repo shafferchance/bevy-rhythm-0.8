@@ -7,6 +7,8 @@ use bevy::{
     }, sprite::{MaterialMesh2dBundle, Material2d, RenderMaterials2d, Material2dPlugin}
 };
 
+use super::target_arrow::{prepare_arrow_sparkle_material, extract_time_since_correct, TimeSinceCorrect};
+
 
 
 #[derive(Component)]
@@ -16,7 +18,9 @@ pub struct Background;
 #[uuid="4ee9c363-1124-4113-890e-199d81b00281"]
 pub struct BackgroundMaterial {
     #[uniform(0)]
-    time: f32
+    time: f32,
+    #[uniform(0)]
+    thing: f32
 }
 
 impl Material2d for BackgroundMaterial {
@@ -88,12 +92,17 @@ pub fn setup_background(
     commands.spawn_bundle(MaterialMesh2dBundle {
         mesh: meshes.add(Mesh::from(shape::Quad::default())).into(),
         material: materials.add(BackgroundMaterial {
-            time: 0.0
+            time: 0.0,
+            thing: 0.0
         }),
         transform: Transform::from_scale(Vec3::new(window.width + 10., window.height + 10., 1.)),
         ..Default::default()
     })
-    .insert(Background);
+    .insert(Background)
+    .insert(TimeSinceCorrect {
+        last_time: 0.0,
+        points: 0.0
+    });
 }
 
 pub struct BackgroundMaterialPlugin;
@@ -104,6 +113,7 @@ impl Plugin for BackgroundMaterialPlugin {
            .add_plugin(ExtractResourcePlugin::<ExtractedTime>::default())
            .add_startup_system(setup_background);
         app.sub_app_mut(RenderApp)
+           .add_system_to_stage(RenderStage::Extract, extract_time_since_correct)
            .add_system_to_stage(RenderStage::Prepare, prepare_background_material);
     }
 }

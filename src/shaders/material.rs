@@ -83,7 +83,6 @@ fn setup(
     mut commands: Commands,
     mut mesh_assets: ResMut<Assets<Mesh>>,
     mut my_material_assets: ResMut<Assets<CoolMaterial>>,
-    window: Res<WindowDescriptor>,
     assets: Res<AssetServer>,
 ) {
     commands

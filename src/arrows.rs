@@ -1,4 +1,6 @@
 use bevy::prelude::*;
+use bevy::render::extract_resource::ExtractResourcePlugin;
+use crate::shaders::target_arrow::ExtractedTime;
 use crate::ScoreResource;
 use crate::consts::*;
 use crate::types::*;
@@ -162,6 +164,7 @@ pub struct ArrowsPlugins;
 impl Plugin for ArrowsPlugins {
     fn build(&self, app: &mut App) {
         app.init_resource::<ArrowMaterialResource>()
+           .add_plugin(ExtractResourcePlugin::<ExtractedTime>::default())
            .add_startup_system(setup_target_arrows)
            .insert_resource(SpawnTimer(Timer::from_seconds(1.0, true)))
            .add_system(spawn_arrows)
