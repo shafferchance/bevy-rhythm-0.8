@@ -6,13 +6,12 @@ use bevy::{
         Component,
         Query,
         Entity,
-        Events,
         Handle,
         Mesh,
         Res, ResMut, Assets,
         shape::Quad,
         Transform,
-        Vec3, Local, EventReader,
+        Vec3, EventReader,
     },
     render::{
         render_resource::{

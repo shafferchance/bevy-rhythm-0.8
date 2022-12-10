@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use crate::{ScoreResource, consts::AppState};
+use crate::{ScoreResource, consts::AppState, time::ControlledTime};
 
 #[derive(Component)]
 struct TimeText;
@@ -64,7 +64,7 @@ fn setup_ui(
     
 }
 
-fn update_time_text(time: Res<Time>, mut query: Query<(&mut Text, With<TimeText>)>) {
+fn update_time_text(time: Res<ControlledTime>, mut query: Query<(&mut Text, With<TimeText>)>) {
     // Song starts 3 seconds after real time
     let secs = time.seconds_since_startup() - 3.;
 

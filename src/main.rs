@@ -8,13 +8,19 @@ mod ui;
 mod score;
 mod audio;
 mod shaders;
+mod menu;
+mod time;
+mod map_maker;
 
 use audio::AudioPlugin;
 use consts::AppState;
+use map_maker::MapMakerPlugin;
+use menu::MenuPlugin;
 use shaders::ShadersPlugin;
 use ui::UIPlugin;
 use arrows::ArrowsPlugins;
 use score::ScoreResource;
+use time::TimePlugin;
 
 fn setup_ui_and_config(mut commands: Commands, asset_server: Res<AssetServer>) {
     let config = types::load_config("test.toml", &asset_server);
@@ -48,5 +54,8 @@ fn main() {
         .add_plugin(UIPlugin)
         .add_plugin(AudioPlugin)
         .add_plugin(ShadersPlugin)
+        .add_plugin(MenuPlugin)
+        .add_plugin(TimePlugin)
+        .add_plugin(MapMakerPlugin)
         .run();
 }
