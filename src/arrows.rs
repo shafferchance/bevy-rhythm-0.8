@@ -1,10 +1,12 @@
 use bevy::prelude::*;
+use bevy::render::extract_resource::ExtractResourcePlugin;
+use crate::shaders::target_arrow::ExtractedTime;
 use crate::ScoreResource;
 use crate::consts::*;
 use crate::types::*;
 
 /// Keeps the textures and materials for Arrows
-struct ArrowMaterialResource {
+pub struct ArrowMaterialResource {
     red_texture: Handle<Image>,
     blue_texture: Handle<Image>,
     green_texture: Handle<Image>,
@@ -131,12 +133,18 @@ fn setup_target_arrows(mut commands: Commands, materials: Res<ArrowMaterialResou
     }
 }
 
+pub struct CorrectArrowEvent {
+    pub direction: Directions,
+    pub points: usize,
+}
+
 /// Despawns arrows when they reach the end if the correct button is clicked
 fn despawn_arrows(
     mut commands: Commands,
     query: Query<(Entity, &Transform, &Arrow)>,
     keyboard_input: Res<Input<KeyCode>>,
-    mut score: ResMut<ScoreResource>
+    mut score: ResMut<ScoreResource>,
+    mut correct_arrow_events: ResMut<Events<CorrectArrowEvent>>,
 ) {
     for (entity, transform, arrow) in query.iter() {
         let pos = transform.translation.x;
@@ -146,6 +154,10 @@ fn despawn_arrows(
             && arrow.direction.key_jest_pressed(&keyboard_input)
         {
             commands.entity(entity).despawn();
+
+            let points = score.increase_correct(TARGET_POSITION - pos);
+
+            correct_arrow_events.send(CorrectArrowEvent { direction: arrow.direction, points });
 
             score.increase_correct(TARGET_POSITION - pos);
         }
@@ -162,6 +174,8 @@ pub struct ArrowsPlugins;
 impl Plugin for ArrowsPlugins {
     fn build(&self, app: &mut App) {
         app.init_resource::<ArrowMaterialResource>()
+           .init_resource::<Events<CorrectArrowEvent>>()
+           .add_plugin(ExtractResourcePlugin::<ExtractedTime>::default())
            .add_startup_system(setup_target_arrows)
            .insert_resource(SpawnTimer(Timer::from_seconds(1.0, true)))
            .add_system(spawn_arrows)
