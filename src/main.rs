@@ -10,6 +10,7 @@ mod audio;
 mod shaders;
 
 use audio::AudioPlugin;
+use consts::AppState;
 use shaders::ShadersPlugin;
 use ui::UIPlugin;
 use arrows::ArrowsPlugins;
@@ -35,16 +36,17 @@ fn main() {
         .add_startup_system(setup_ui_and_config)
         .add_system(close_on_esc)
         .insert_resource(WindowDescriptor {
-            title: "Test".to_string(),
+            title: "Rhythm!".to_string(),
             width: 800.,
             height: 600.,
             ..Default::default()
         })
-        // .insert_resource(WinitSettings::desktop_app())
+        // Changed 0.4 -> 0.5
+        .add_state(AppState::Menu)
         .add_plugins(DefaultPlugins) // Expands to CorePlugin, InputPlugin, and WindowPlugin
         .add_plugin(ArrowsPlugins)
         .add_plugin(UIPlugin)
-        // .add_plugin(AudioPlugin)
+        .add_plugin(AudioPlugin)
         .add_plugin(ShadersPlugin)
         .run();
 }

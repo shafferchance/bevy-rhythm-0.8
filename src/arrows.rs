@@ -176,10 +176,16 @@ impl Plugin for ArrowsPlugins {
         app.init_resource::<ArrowMaterialResource>()
            .init_resource::<Events<CorrectArrowEvent>>()
            .add_plugin(ExtractResourcePlugin::<ExtractedTime>::default())
-           .add_startup_system(setup_target_arrows)
            .insert_resource(SpawnTimer(Timer::from_seconds(1.0, true)))
-           .add_system(spawn_arrows)
-           .add_system(despawn_arrows)
-           .add_system(move_arrows);
+           .add_system_set(
+                SystemSet::on_enter(AppState::Game)
+                    .with_system(setup_target_arrows)
+            )
+           .add_system_set(
+                SystemSet::on_update(AppState::Game)
+                    .with_system(spawn_arrows)
+                    .with_system(despawn_arrows)
+                    .with_system(move_arrows)
+           );
     }
 }

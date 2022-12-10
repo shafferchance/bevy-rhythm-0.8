@@ -1,4 +1,4 @@
-# Ryhthm
+# Rhythm Game
 
 ## A Bevy example game <br><br> 🚨 This is not my original work!!!! 🚨
 
