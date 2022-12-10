@@ -6,7 +6,7 @@ use crate::consts::*;
 use crate::types::*;
 
 /// Keeps the textures and materials for Arrows
-struct ArrowMaterialResource {
+pub struct ArrowMaterialResource {
     red_texture: Handle<Image>,
     blue_texture: Handle<Image>,
     green_texture: Handle<Image>,

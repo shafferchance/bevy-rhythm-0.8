@@ -98,11 +98,7 @@ pub fn setup_background(
         transform: Transform::from_scale(Vec3::new(window.width + 10., window.height + 10., 1.)),
         ..Default::default()
     })
-    .insert(Background)
-    .insert(TimeSinceCorrect {
-        last_time: 0.0,
-        points: 0.0
-    });
+    .insert(Background);
 }
 
 pub struct BackgroundMaterialPlugin;

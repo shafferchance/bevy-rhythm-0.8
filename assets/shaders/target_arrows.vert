@@ -9,7 +9,7 @@ layout(location = 1) out vec2 v_Uv;
 layout(set = 0, binding = 0) uniform CameraViewProj {
     mat4 ViewProj;
 };
-layout(set = 1, binding = 0) uniform Transform {
+layout(set = 2, binding = 0) uniform Mesh {
     mat4 Model;
 };
 

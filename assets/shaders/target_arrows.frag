@@ -2,7 +2,6 @@
 
 #define TWO_PI 6.28318530718
 
-layout(location = 0) in vec4 v_Position;
 layout(location = 1) in vec2 v_Uv;
 layout(location = 0) out vec4 o_Target;
 
@@ -10,7 +9,7 @@ layout(set = 1, binding = 0) uniform TargetArrowMaterial {
     float time;
     float last_time;
     float points;
-}
+};
 
 float interval(in float a, in float b, in float val) {
     return step(a, val) * smoothstep(1.0 - b - 0.1, 1.0 - b, 1.0 - val);

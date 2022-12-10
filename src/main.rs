@@ -44,7 +44,7 @@ fn main() {
         .add_plugins(DefaultPlugins) // Expands to CorePlugin, InputPlugin, and WindowPlugin
         .add_plugin(ArrowsPlugins)
         .add_plugin(UIPlugin)
-        .add_plugin(AudioPlugin)
+        // .add_plugin(AudioPlugin)
         .add_plugin(ShadersPlugin)
         .run();
 }
