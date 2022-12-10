@@ -6,12 +6,13 @@ use bevy::{
         Component,
         Query,
         Entity,
+        Events,
         Handle,
         Mesh,
         Res, ResMut, Assets,
         shape::Quad,
         Transform,
-        Vec3,
+        Vec3, Local, EventReader,
     },
     render::{
         render_resource::{
@@ -27,7 +28,7 @@ use bevy::{
     time::Time
 };
 
-use crate::{types::Directions, consts::TARGET_POSITION};
+use crate::{types::Directions, consts::TARGET_POSITION, arrows::CorrectArrowEvent};
 
 // Resources to Extract for use in shader
 pub struct ExtractedTime {
@@ -152,9 +153,27 @@ fn setup_target_arrows_sparkle(
             ..Default::default()
         })
         .insert(TimeSinceCorrect {
-            last_time: 3.,
-            points: 0.5
+            last_time: -10.,
+            points: 0.
+        })
+        .insert(TargetArrowSparkle {
+            direction: *direction
         });
+    }
+}
+
+pub fn correct_arrow_event_listener(
+    time: Res<Time>,
+    mut correct_event_reader: EventReader<CorrectArrowEvent>,
+    mut query: Query<(&TargetArrowSparkle, &mut TimeSinceCorrect)>,
+) {
+    for event in correct_event_reader.iter() {
+        for (arrow, mut last_correct) in query.iter_mut() {
+            if arrow.direction == event.direction {
+                last_correct.last_time = time.seconds_since_startup() as f32;
+                last_correct.points = event.points as f32 / 100.;
+            }
+        }
     }
 }
 
@@ -163,7 +182,8 @@ impl Plugin for ArrowSparkleMaterialPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugin(Material2dPlugin::<ArrowSparkleMaterial>::default())
            .add_plugin(ExtractResourcePlugin::<ExtractedTime>::default())
-           .add_startup_system(setup_target_arrows_sparkle);
+           .add_startup_system(setup_target_arrows_sparkle)
+           .add_system(correct_arrow_event_listener);
         app.sub_app_mut(RenderApp)
            .add_system_to_stage(RenderStage::Extract, extract_time_since_correct)
            .add_system_to_stage(RenderStage::Prepare, prepare_arrow_sparkle_material);
