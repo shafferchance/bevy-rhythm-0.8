@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use crate::ScoreResource;
+use crate::{ScoreResource, consts::AppState, time::ControlledTime};
 
 #[derive(Component)]
 struct TimeText;
@@ -64,7 +64,7 @@ fn setup_ui(
     
 }
 
-fn update_time_text(time: Res<Time>, mut query: Query<(&mut Text, With<TimeText>)>) {
+fn update_time_text(time: Res<ControlledTime>, mut query: Query<(&mut Text, With<TimeText>)>) {
     // Song starts 3 seconds after real time
     let secs = time.seconds_since_startup() - 3.;
 
@@ -99,8 +99,14 @@ fn update_score_text(score: Res<ScoreResource>, mut query: Query<(&mut Text, Wit
 pub  struct UIPlugin;
 impl Plugin for UIPlugin {
     fn build(&self, app: &mut App) {
-        app.add_startup_system(setup_ui)
-           .add_system(update_time_text)
-           .add_system(update_score_text);
+        app.add_system_set(
+                SystemSet::on_enter(AppState::Game)
+                    .with_system(setup_ui)
+            )
+            .add_system_set(
+                SystemSet::on_update(AppState::Game)
+                    .with_system(update_time_text)
+                    .with_system(update_score_text)   
+            );
     }
 }

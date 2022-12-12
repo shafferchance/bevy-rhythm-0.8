@@ -12,3 +12,11 @@ pub const THRESHOLD: f32 = 20.;
 
 /// Total distance traveled by an arrow, from spawn to target
 pub const DISTANCE: f32 = TARGET_POSITION - SPAWN_POSITION;
+
+// Need for const static string removed from 0.4 -> 0.5
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
+pub enum AppState {
+    Menu,
+    Game,
+    MakeMap
+}

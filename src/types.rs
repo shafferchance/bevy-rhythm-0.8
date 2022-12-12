@@ -15,6 +15,17 @@ pub enum Directions {
 }
 
 impl Directions {
+    pub fn key_pressed(&self, input: &Input<KeyCode>) -> bool {
+        let keys = match self {
+            Directions::Up => [KeyCode::Up, KeyCode::D],
+            Directions::Down => [KeyCode::Down, KeyCode::F],
+            Directions::Left => [KeyCode::Left, KeyCode::J],
+            Directions::Right => [KeyCode::Right, KeyCode::K],
+        };
+
+        keys.iter().any(|code| input.pressed(*code))
+    }
+
     /// Checks if a key that corresponds to this direciton has been pressed
     pub fn key_jest_pressed(&self, input: &Input<KeyCode>) -> bool {
         let keys = match self {

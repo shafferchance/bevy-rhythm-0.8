@@ -3,6 +3,7 @@ use bevy::render::extract_resource::ExtractResourcePlugin;
 use crate::shaders::target_arrow::ExtractedTime;
 use crate::ScoreResource;
 use crate::consts::*;
+use crate::time::ControlledTime;
 use crate::types::*;
 
 /// Keeps the textures and materials for Arrows
@@ -43,7 +44,7 @@ fn spawn_arrows(
     mut commands: Commands,
     mut song_config: ResMut<SongConfig>,
     materials: Res<ArrowMaterialResource>,
-    time: Res<Time>,
+    time: Res<ControlledTime>,
 ) {
     // We get the current time since startup (secs) and the time since the last iteration (secs_last),
     // this way we check if any arrows should spawn th this window
@@ -91,7 +92,7 @@ fn spawn_arrows(
     }
 }
 
-fn move_arrows(time: Res<Time>, mut query: Query<(&mut Transform, &Arrow)>) {
+fn move_arrows(time: Res<ControlledTime>, mut query: Query<(&mut Transform, &Arrow)>) {
     for (mut transform, arrow) in query.iter_mut() {
         transform.translation.x += time.delta_seconds() * arrow.speed.value();
 
@@ -176,10 +177,16 @@ impl Plugin for ArrowsPlugins {
         app.init_resource::<ArrowMaterialResource>()
            .init_resource::<Events<CorrectArrowEvent>>()
            .add_plugin(ExtractResourcePlugin::<ExtractedTime>::default())
-           .add_startup_system(setup_target_arrows)
            .insert_resource(SpawnTimer(Timer::from_seconds(1.0, true)))
-           .add_system(spawn_arrows)
-           .add_system(despawn_arrows)
-           .add_system(move_arrows);
+           .add_system_set(
+                SystemSet::on_enter(AppState::Game)
+                    .with_system(setup_target_arrows)
+            )
+           .add_system_set(
+                SystemSet::on_update(AppState::Game)
+                    .with_system(spawn_arrows)
+                    .with_system(despawn_arrows)
+                    .with_system(move_arrows)
+           );
     }
 }
