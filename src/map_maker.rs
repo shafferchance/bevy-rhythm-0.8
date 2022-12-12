@@ -52,6 +52,22 @@ fn save_to_file_on_exit(
 }
 
 #[derive(Component)]
+struct MapMakerAudio(Handle<AudioSource>);
+
+impl FromWorld for MapMakerAudio {
+    fn from_world(world: &mut World) -> Self {
+        let asset_server = world.get_resource::<AssetServer>().unwrap();
+
+        let audio = asset_server.load("map_maker_song.mp3");
+        Self(audio)
+    }
+}
+
+fn start_song(audio: Res<Audio>, map_maker_audio: Res<MapMakerAudio>) {
+    audio.play(map_maker_audio.0.clone());
+}
+
+#[derive(Component)]
 struct MapMakerArrow(Directions);
 
 fn setup_map_maker_arrows(
@@ -97,9 +113,11 @@ pub struct MapMakerPlugin;
 impl Plugin for MapMakerPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<Presses>()
+           .init_resource::<MapMakerAudio>()
            .add_system_set(
                 SystemSet::on_enter(AppState::MakeMap)
                     .with_system(setup_map_maker_arrows)
+                    .with_system(start_song)
            )
            .add_system_set(
                 SystemSet::on_update(AppState::MakeMap)

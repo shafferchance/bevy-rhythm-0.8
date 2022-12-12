@@ -1,7 +1,6 @@
 use bevy::{
     prelude::*,
     reflect::TypeUuid,
-    window::WindowResized,
     render::{
         render_resource::{AsBindGroup, ShaderType, OwnedBindingResource, encase }, extract_resource::{ExtractResource, ExtractResourcePlugin}, renderer::{RenderQueue}, RenderApp, RenderStage,
     }, sprite::{MaterialMesh2dBundle, Material2d, RenderMaterials2d, Material2dPlugin}

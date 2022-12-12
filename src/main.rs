@@ -1,5 +1,4 @@
-use bevy::prelude::*;
-use bevy::window::close_on_esc;
+use bevy::{prelude::*, app::AppExit};
 
 mod arrows;
 mod consts;
@@ -22,6 +21,12 @@ use arrows::ArrowsPlugins;
 use score::ScoreResource;
 use time::TimePlugin;
 
+fn fire_on_exit(mut app_exit_events: EventWriter<AppExit>, input: Res<Input<KeyCode>>) {
+     if input.just_pressed(KeyCode::Escape) {
+        app_exit_events.send(AppExit);
+     }
+}
+
 fn setup_ui_and_config(mut commands: Commands, asset_server: Res<AssetServer>) {
     let config = types::load_config("test.toml", &asset_server);
     let camera = Camera2dBundle::default();
@@ -40,7 +45,7 @@ fn main() {
         .init_resource::<ScoreResource>()
         .insert_resource(Msaa { samples: 4 })
         .add_startup_system(setup_ui_and_config)
-        .add_system(close_on_esc)
+        .add_system(fire_on_exit)
         .insert_resource(WindowDescriptor {
             title: "Rhythm!".to_string(),
             width: 800.,
